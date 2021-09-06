@@ -28,8 +28,10 @@ import org.eclipse.gef3.tools.DirectEditManager;
 import org.jkiss.dbeaver.erd.model.ERDElement;
 import org.jkiss.dbeaver.erd.model.ERDEntity;
 import org.jkiss.dbeaver.erd.model.ERDEntityAttribute;
+import org.jkiss.dbeaver.erd.model.ERDObject;
 import org.jkiss.dbeaver.erd.ui.ERDUIUtils;
 import org.jkiss.dbeaver.erd.ui.editor.ERDGraphicalViewer;
+import org.jkiss.dbeaver.erd.ui.editor.ERDViewStyle;
 import org.jkiss.dbeaver.erd.ui.figures.AttributeItemFigure;
 import org.jkiss.dbeaver.erd.ui.figures.EditableLabel;
 import org.jkiss.dbeaver.erd.ui.figures.EntityFigure;
@@ -41,6 +43,7 @@ import org.jkiss.dbeaver.model.DBPEvaluationContext;
 import org.jkiss.dbeaver.model.DBUtils;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -149,10 +152,10 @@ public class EntityPart extends NodePart {
     @Override
     protected EntityFigure createFigure() {
         final EntityDiagram diagram = getDiagram();
-
         final EntityFigure figure = createFigureImpl();
+        final ERDEntity entity = getEntity();
+        final EntityDiagram.NodeVisualInfo visualInfo = diagram.getVisualInfo(entity.getObject());
 
-        EntityDiagram.NodeVisualInfo visualInfo = diagram.getVisualInfo(getEntity().getObject());
         if (visualInfo != null) {
             if (visualInfo.initBounds != null) {
                 figure.setLocation(visualInfo.initBounds.getLocation());
@@ -160,9 +163,13 @@ public class EntityPart extends NodePart {
             if (visualInfo.bgColor != null) {
                 figure.setBackgroundColor(visualInfo.bgColor);
             }
-            if (getEntity().getAttributeVisibility() == null && visualInfo.attributeVisibility != null) {
-                getEntity().setAttributeVisibility(visualInfo.attributeVisibility);
+            if (entity.getAttributeVisibility() == null && visualInfo.attributeVisibility != null) {
+                entity.setAttributeVisibility(visualInfo.attributeVisibility);
             }
+        }
+
+        if (diagram.hasAttributeStyle(ERDViewStyle.ALPHABETICAL_ORDER)) {
+            entity.sortAttributes(Comparator.comparing(ERDObject::getObject, DBUtils.nameComparator()), true);
         }
 
         return figure;
