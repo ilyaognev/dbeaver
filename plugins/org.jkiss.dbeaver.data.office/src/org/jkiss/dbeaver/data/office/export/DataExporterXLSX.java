@@ -77,7 +77,7 @@ public class DataExporterXLSX extends StreamExporterAbstract {
     private static final int EXCEL2007MAXROWS = 1048575;
     private boolean showDescription;
 
-    enum FontStyleProp {NONE, BOLD, ITALIC, STRIKEOUT, UNDERLINE}
+    enum FontStyleProp {NONE, BOLD, ITALIC, STRIKEOUT, UNDERLINE, AWESOME}
 
     private static final int ROW_WINDOW = 100;
 
@@ -238,6 +238,12 @@ public class DataExporterXLSX extends StreamExporterAbstract {
 
         case UNDERLINE:
             fontBold.setUnderline((byte) 3);
+            break;
+
+        case AWESOME:
+            fontBold.setFontName("Courier New");
+            fontBold.setBold(true);
+            fontBold.setColor(IndexedColors.INDIGO.getIndex());
             break;
 
         default:
